@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Garments IE & Operation Bulletin</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- jsPDF for PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+            },
+            accent: {
+              500: '#0284c7',
+              600: '#0369a1',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      background-color: #0f172a;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .mobile-screen {
+      max-width: 480px;
+      height: 100vh;
+      max-height: 920px;
+      margin: 0 auto;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    @media (min-width: 640px) {
+      .mobile-screen {
+        height: 92vh;
+        border-radius: 36px;
+        border: 8px solid #334155;
+        margin-top: 4vh;
+      }
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen text-slate-100">
+
+  <!-- Mobile App Frame -->
+  <div class="mobile-screen w-full bg-slate-900 flex flex-col relative overflow-hidden">
+    
+    <!-- Status Bar & App Header -->
+    <header class="bg-slate-800 border-b border-slate-700/60 px-4 pt-3 pb-3 flex items-center justify-between z-10">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-emerald-500/20">
+          <i class="fa-solid me-0 fa-shirt text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-base font-bold tracking-wide text-white leading-tight">Garment Flow IE</h1>
+          <p class="text-[11px] text-emerald-400 font-medium leading-none" id="currentStyleBadge">Basic Polo Shirt | Line 04</p>
+        </div>
+      </div>
+      <button id="styleSelectBtn" onclick="openStyleModal()" class="px-2.5 py-1.5 rounded-lg bg-slate-700/70 hover:bg-slate-700 text-xs font-semibold text-slate-200 flex items-center gap-1.5 border border-slate-600/50 transition">
+        <i class="fa-solid fa-list-check text-emerald-400"></i>
+        <span>Styles</span>
+      </button>
+    </header>
+
+    <!-- Main Scrollable Content Area -->
+    <main class="flex-1 overflow-y-auto hide-scrollbar p-3 space-y-4 pb-24">
+      
+      <!-- TAB 1: OPERATION BREAKDOWN -->
+      <section id="tab-breakdown" class="tab-content space-y-3">
+        <!-- Style Info Card -->
+        <div class="bg-slate-800/80 rounded-2xl p-4 border border-slate-700/60 shadow-sm">
+          <div class="flex justify-between items-start mb-2">
+            <div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">ACTIVE BULLETIN</span>
+              <h2 class="text-lg font-bold text-white mt-1" id="styleTitleDisplay">Polo Shirt - Style #PL-892</h2>
+            </div>
+            <button onclick="openAddOperationModal()" class="w-8 h-8 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 flex items-center justify-center font-bold shadow-md shadow-emerald-500/30 transition">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+          <div class="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-slate-700/50 text-center">
+            <div class="bg-slate-900/50 p-2 rounded-xl border border-slate-700/40">
+              <p class="text-[10px] text-slate-400 uppercase font-semibold">Total SMV</p>
+              <p class="text-base font-extrabold text-emerald-400 mt-0.5" id="totalSmvDisplay">14.85</p>
+            </div>
+            <div class="bg-slate-900/50 p-2 rounded-xl border border-slate-700/40">
+              <p class="text-[10px] text-slate-400 uppercase font-semibold">Target / Hr</p>
+              <p class="text-base font-extrabold text-sky-400 mt-0.5" id="targetHrDisplay">180</p>
+            </div>
+            <div class="bg-slate-900/50 p-2 rounded-xl border border-slate-700/40">
+              <p class="text-[10px] text-slate-400 uppercase font-semibold">Operators</p>
+              <p class="text-base font-extrabold text-amber-400 mt-0.5" id="totalOpsDisplay">22</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Operations List Header -->
+        <div class="flex items-center justify-between px-1">
+          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Operation Breakdown (<span id="opCount">0</span>)</h3>
+          <span class="text-[11px] text-slate-500">Tap operation for actions</span>
+        </div>
+
+        <!-- Operations List Dynamic Container -->
+        <div id="operationList" class="space-y-2">
+          <!-- Dynamic rendering via JS -->
+        </div>
+      </section>
+
+      <!-- TAB 2: FLOOR TIME STUDY SHEET & STOPWATCH -->
+      <section id="tab-timestudy" class="tab-content hidden space-y-3">
+        <!-- Target Operation Selector -->
+        <div class="bg-slate-800/80 rounded-2xl p-4 border border-slate-700/60">
+          <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Select Operation to Study</label>
+          <select id="timeStudyOpSelect" onchange="onTimeStudyOpChange()" class="w-full bg-slate-900 text-slate-100 text-sm rounded-xl p-3 border border-slate-700 focus:outline-none focus:border-emerald-500">
+            <!-- Populated via JS -->
+          </select>
+        </div>
+
+        <!-- Digital Stopwatch Display -->
+        <div class="bg-slate-800/80 rounded-2xl p-4 border border-slate-700/60 text-center relative overflow-hidden">
+          <div class="text-[11px] font-semibold text-emerald-400 uppercase tracking-widest mb-1">Floor StopWatch</div>
+          <div class="text-4xl font-mono font-black text-white tracking-wider my-2" id="stopwatchDisplay">00:00.00</div>
+          
+          <div class="flex justify-center items-center gap-3 mt-4">
+            <button id="btnStartStop" onclick="toggleStopwatch()" class="flex-1 py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold rounded-xl shadow-lg shadow-emerald-500/20 active:scale-95 transition">
+              <i class="fa-solid fa-play mr-1"></i> START
+            </button>
+            <button id="btnLap" onclick="recordLap()" class="flex-1 py-3 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl shadow-lg shadow-sky-600/20 active:scale-95 transition">
+              <i class="fa-solid fa-flag mr-1"></i> LAP
+            </button>
+            <button onclick="resetStopwatch()" class="px-4 py-3 bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold rounded-xl active:scale-95 transition">
+              <i class="fa-solid fa-rotate-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Rating & Allowance Calculation Card -->
+        <div class="bg-slate-800/80 rounded-2xl p-4 border border-slate-700/60 space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold text-slate-300 uppercase">Rating & Allowance Settings</h4>
+            <span class="text-[11px] text-emerald-400 font-mono" id="calculatedResultBadge">Avg: 0.00s</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-medium text-slate-400 mb-1">Performance Rating %</label>
+              <input type="number" id="ratingInput" value="100" oninput="calculateTimeStudySMV()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-center font-bold text-emerald-400 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-[11px] font-medium text-slate-400 mb-1">Allowance % (Personal/Fatigue)</label>
+              <input type="number" id="allowanceInput" value="12" oninput="calculateTimeStudySMV()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-center font-bold text-sky-400 focus:outline-none">
+            </div>
+          </div>
+
+          <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-700/60 flex items-center justify-between">
+            <div>
+              <p class="text-[10px] text-slate-400 uppercase font-semibold">Calculated Observed SMV</p>
+              <p class="text-lg font-black text-amber-400 font-mono" id="calculatedSmvDisplay">0.00 min</p>
+            </div>
+            <button onclick="applyCalculatedSmvToOp()" class="px-3 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold rounded-lg shadow-md transition">
+              Apply SMV to Bulletin
+            </button>
+          </div>
+        </div>
+
+        <!-- Recorded Laps Table -->
+        <div class="bg-slate-800/80 rounded-2xl p-4 border border-slate-700/60">
+          <div class="flex justify-between items-center mb-2">
+            <h4 class="text-xs font-bold text-slate-300 uppercase">Recorded Cycles (<span id="lapCount">0</span>)</h4>
+            <button onclick="clearLaps()" class="text-[11px] text-rose-400 hover:underline">Clear Cycles</button>
+          </div>
+          <div class="max-h-40 overflow-y-auto hide-scrollbar space-y-1.5" id="lapsList">
+            <p class="text-xs text-slate-500 text-center py-4">No cycle times recorded yet. Start timer & tap LAP.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: LINE BALANCING & BOTTLENECK FINDING -->
+      <section id="tab-balancing" class="tab-content hidden space-y-3">
+        <!-- Line Balancing KPI Summary -->
+        <div class="grid grid-cols-2 gap-2">
+          <div class="bg-slate-800/80 p-3 rounded-2xl border border-slate-700/60">
+            <p class="text-[10px] text-slate-400 uppercase font-bold">Line Efficiency</p>
+            <p class="text-xl font-black text-emerald-400 mt-1" id="lineEffDisplay">0%</p>
+            <p class="text-[10px] text-slate-500 mt-0.5">Target vs Capacity</p>
+          </div>
+          <div class="bg-slate-800/80 p-3 rounded-2xl border border-slate-700/60">
+            <p class="text-[10px] text-slate-400 uppercase font-bold">Pitch Time (Takt)</p>
+            <p class="text-xl font-black text-sky-400 mt-1" id="pitchTimeDisplay">0.00 min</p>
+            <p class="text-[10px] text-slate-500 mt-0.5">Target Cycle Time</p>
+          </div>
+        </div>
+
+        <!-- Bottleneck Visual Bar Chart -->
+        <div class="bg-slate-800/80 rounded-2xl p-4 border border-slate-700/60">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wide">Bottleneck Analysis</h3>
+              <p class="text-[11px] text-slate-400">Red bars exceed Pitch Time</p>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30" id="bottleneckBadge">0 Bottlenecks</span>
+          </div>
+          <div class="h-52 relative w-full">
+            <canvas id="balancingChart"></canvas>
+          </div>
+        </div>
+
+        <!-- AI Line Balancing Suggestions -->
+        <div class="bg-slate-800/80 rounded-2xl p-4 border border-slate-700/60 space-y-3">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
+            <h3 class="text-xs font-bold text-slate-200 uppercase">IE Line Balancing Suggestions</h3>
+          </div>
+          <div id="balancingSuggestions" class="space-y-2 text-xs text-slate-300">
+            <!-- Dynamic suggestions injected here -->
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: PRODUCTION STUDY SHEET -->
+      <section id="tab-production" class="tab-content hidden space-y-3">
+        <!-- Target Setup -->
+        <div class="bg-slate-800/80 rounded-2xl p-4 border border-slate-700/60">
+          <h3 class="text-xs font-bold text-slate-200 uppercase mb-3">Production Target & Setup</h3>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] text-slate-400 mb-1">Target Line Output / Hr</label>
+              <input type="number" id="prodTargetInput" value="180" onchange="updateProductionStudy()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-center font-bold text-sky-400 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-[11px] text-slate-400 mb-1">Working Hours / Day</label>
+              <input type="number" id="prodHoursInput" value="8" onchange="updateProductionStudy()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-center font-bold text-emerald-400 focus:outline-none">
+            </div>
+          </div>
+        </div>
+
+        <!-- Hourly Output Tracker -->
+        <div class="bg-slate-800/80 rounded-2xl p-4 border border-slate-700/60">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-xs font-bold text-slate-200 uppercase">Hourly Production Log</h3>
+            <span class="text-xs font-bold text-emerald-400" id="totalActualOutputDisplay">Total: 0 pcs</span>
+          </div>
+
+          <div class="space-y-2" id="hourlyLogsContainer">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <!-- Production Efficiency Card -->
+        <div class="bg-slate-800/80 rounded-2xl p-4 border border-slate-700/60 flex items-center justify-between">
+          <div>
+            <p class="text-[10px] text-slate-400 uppercase font-semibold">Overall Line Efficiency</p>
+            <p class="text-2xl font-black text-emerald-400 mt-0.5" id="prodOverallEff">0%</p>
+          </div>
+          <div class="text-right">
+            <p class="text-[10px] text-slate-400 uppercase font-semibold">Production Variance</p>
+            <p class="text-sm font-bold text-rose-400 mt-0.5" id="prodVarianceDisplay">-0 pcs</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: REPORTS & PDF/EXCEL EXPORT -->
+      <section id="tab-reports" class="tab-content hidden space-y-4">
+        <div class="bg-slate-800/80 rounded-2xl p-4 border border-slate-700/60">
+          <h3 class="text-sm font-bold text-white mb-1">Export Industrial Engineering Data</h3>
+          <p class="text-xs text-slate-400">Generate printable PDF bulletins or downloadable CSV/Excel reports directly from your mobile device.</p>
+        </div>
+
+        <div class="space-y-3">
+          <!-- PDF Report Download Button -->
+          <button onclick="exportToPDF()" class="w-full bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-bold p-4 rounded-2xl shadow-lg flex items-center justify-between active:scale-98 transition">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-file-pdf"></i>
+              </div>
+              <div class="text-left">
+                <p class="text-sm font-bold">Operation Bulletin PDF</p>
+                <p class="text-[11px] text-rose-200">Printable tech pack & layout sheet</p>
+              </div>
+            </div>
+            <i class="fa-solid fa-download text-sm"></i>
+          </button>
+
+          <!-- Excel/CSV Export Button -->
+          <button onclick="exportToExcel()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white font-bold p-4 rounded-2xl shadow-lg flex items-center justify-between active:scale-98 transition">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-file-excel"></i>
+              </div>
+              <div class="text-left">
+                <p class="text-sm font-bold">Excel / CSV Data Export</p>
+                <p class="text-[11px] text-emerald-200">Full operations breakdown sheet</p>
+              </div>
+            </div>
+            <i class="fa-solid fa-download text-sm"></i>
+          </button>
+
+          <!-- Time Study Data Export -->
+          <button onclick="exportTimeStudyCSV()" class="w-full bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white font-bold p-4 rounded-2xl shadow-lg flex items-center justify-between active:scale-98 transition">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-stopwatch"></i>
+              </div>
+              <div class="text-left">
+                <p class="text-sm font-bold">Time Study Raw Laps CSV</p>
+                <p class="text-[11px] text-sky-200">Detailed cycle times log</p>
+              </div>
+            </div>
+            <i class="fa-solid fa-download text-sm"></i>
+          </button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Android Bottom Navigation Bar -->
+    <nav class="absolute bottom-0 left-0 right-0 bg-slate-950/95 backdrop-blur border-t border-slate-800 px-2 py-2 flex justify-around items-center z-20">
+      <button onclick="switchTab('breakdown')" id="nav-breakdown" class="nav-item flex flex-col items-center justify-center w-16 py-1 text-emerald-400 transition">
+        <i class="fa-solid fa-list-ol text-lg"></i>
+        <span class="text-[10px] font-semibold mt-1">Bulletin</span>
+      </button>
+
+      <button onclick="switchTab('timestudy')" id="nav-timestudy" class="nav-item flex flex-col items-center justify-center w-16 py-1 text-slate-500 hover:text-slate-300 transition">
+        <i class="fa-solid fa-stopwatch text-lg"></i>
+        <span class="text-[10px] font-semibold mt-1">Time Study</span>
+      </button>
+
+      <button onclick="switchTab('balancing')" id="nav-balancing" class="nav-item flex flex-col items-center justify-center w-16 py-1 text-slate-500 hover:text-slate-300 transition">
+        <i class="fa-solid fa-scale-balanced text-lg"></i>
+        <span class="text-[10px] font-semibold mt-1">Balancing</span>
+      </button>
+
+      <button onclick="switchTab('production')" id="nav-production" class="nav-item flex flex-col items-center justify-center w-16 py-1 text-slate-500 hover:text-slate-300 transition">
+        <i class="fa-solid fa-chart-line text-lg"></i>
+        <span class="text-[10px] font-semibold mt-1">Production</span>
+      </button>
+
+      <button onclick="switchTab('reports')" id="nav-reports" class="nav-item flex flex-col items-center justify-center w-16 py-1 text-slate-500 hover:text-slate-300 transition">
+        <i class="fa-solid fa-file-export text-lg"></i>
+        <span class="text-[10px] font-semibold mt-1">Export</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- MODAL: ADD / EDIT OPERATION -->
+  <div id="opModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-700 w-full max-w-md rounded-3xl p-5 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-white" id="opModalTitle">Add New Operation</h3>
+        <button onclick="closeOpModal()" class="text-slate-400 hover:text-white p-1">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <form id="opForm" onsubmit="handleOpFormSubmit(event)" class="space-y-3">
+        <input type="hidden" id="opEditId">
+        
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Operation Name</label>
+          <input type="text" id="opNameInput" required placeholder="e.g., Attach Collar" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-emerald-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Machine Type</label>
+            <select id="opMachineInput" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-emerald-500">
+              <option value="SNLS">SNLS (Single Needle)</option>
+              <option value="DNLS">DNLS (Double Needle)</option>
+              <option value="OL-4D">Overlock (4-Thread)</option>
+              <option value="OL-5D">Overlock (5-Thread)</option>
+              <option value="FL">Flatlock</option>
+              <option value="KANSAI">Kansai Multi-needle</option>
+              <option value="MANUAL">Manual / Helper</option>
+              <option value="IRON">Steam Iron</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Standard SMV (min)</label>
+            <input type="number" step="0.01" id="opSmvInput" required placeholder="0.75" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-emerald-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Allocated Operators</label>
+            <input type="number" step="0.5" id="opOpsInput" value="1" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Section / Folder</label>
+            <select id="opSectionInput" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-emerald-500">
+              <option value="Component">Component Prep</option>
+              <option value="Front">Front Part</option>
+              <option value="Back">Back Part</option>
+              <option value="Assembly">Assembly & Join</option>
+              <option value="Finishing">Finishing / Press</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pt-2 flex gap-3">
+          <button type="button" onclick="closeOpModal()" class="flex-1 py-3 bg-slate-800 text-slate-300 font-bold rounded-xl hover:bg-slate-700 transition">Cancel</button>
+          <button type="submit" class="flex-1 py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition">Save Operation</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: STYLE SELECTION & CREATION -->
+  <div id="styleModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-700 w-full max-w-md rounded-3xl p-5 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-white">Select / Manage Garment Style</h3>
+        <button onclick="closeStyleModal()" class="text-slate-400 hover:text-white p-1">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <label class="block text-xs font-semibold text-slate-400">Available Garment Styles</label>
+        <div id="stylesListContainer" class="space-y-2 max-h-48 overflow-y-auto hide-scrollbar">
+          <!-- Injected dynamically -->
+        </div>
+
+        <div class="pt-3 border-t border-slate-800">
+          <p class="text-xs font-bold text-slate-300 mb-2">Create New Style Bulletin</p>
+          <div class="space-y-2">
+            <input type="text" id="newStyleName" placeholder="Garment Name (e.g. Denim Jacket)" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+            <div class="grid grid-cols-2 gap-2">
+              <input type="text" id="newStyleCode" placeholder="Code (e.g. DJ-102)" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+              <input type="text" id="newStyleLine" placeholder="Line (e.g. Line 08)" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+            </div>
+            <button onclick="createNewStyle()" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-xs font-bold rounded-xl transition">
+              <i class="fa-solid fa-plus mr-1"></i> Add Style
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS LOGIC AND STATE MANAGEMENT -->
+  <script>
+    // Preset Garment Bulletins Store
+    let availableStyles = [
+      {
+        name: "Basic Polo Shirt",
+        styleCode: "PL-892",
+        lineNo: "Line 04",
+        targetHourly: 180,
+        workingHours: 8,
+        operations: [
+          { id: 1, name: "Collar Band Stitch", machine: "SNLS", smv: 0.65, ops: 1, section: "Component" },
+          { id: 2, name: "Attach Collar to Neck", machine: "SNLS", smv: 0.95, ops: 2, section: "Assembly" },
+          { id: 3, name: "Front Placket Join", machine: "SNLS", smv: 1.10, ops: 2, section: "Front" },
+          { id: 4, name: "Shoulder Join", machine: "OL-4D", smv: 0.45, ops: 1, section: "Assembly" },
+          { id: 5, name: "Sleeve Hemming", machine: "FL", smv: 0.50, ops: 1, section: "Component" },
+          { id: 6, name: "Attach Sleeve", machine: "OL-4D", smv: 1.25, ops: 2, section: "Assembly" },
+          { id: 7, name: "Side Seam Join", machine: "OL-4D", smv: 0.85, ops: 2, section: "Assembly" },
+          { id: 8, name: "Bottom Hemming", machine: "FL", smv: 0.60, ops: 1, section: "Assembly" },
+          { id: 9, name: "Thread Trimming / Inspection", machine: "MANUAL", smv: 0.40, ops: 1, section: "Finishing" },
+          { id: 10, name: "Final Garment Pressing", machine: "IRON", smv: 0.55, ops: 1, section: "Finishing" }
+        ]
+      },
+      {
+        name: "Basic Crew Neck T-Shirt",
+        styleCode: "TS-104",
+        lineNo: "Line 02",
+        targetHourly: 220,
+        workingHours: 8,
+        operations: [
+          { id: 101, name: "Rib Neck Prep", machine: "FL", smv: 0.35, ops: 1, section: "Component" },
+          { id: 102, name: "Shoulder Join", machine: "OL-4D", smv: 0.40, ops: 1, section: "Assembly" },
+          { id: 103, name: "Attach Neck Rib", machine: "OL-4D", smv: 0.70, ops: 2, section: "Assembly" },
+          { id: 104, name: "Attach Sleeve", machine: "OL-4D", smv: 0.90, ops: 2, section: "Assembly" },
+          { id: 105, name: "Side Seam Join", machine: "OL-4D", smv: 0.75, ops: 2, section: "Assembly" },
+          { id: 106, name: "Bottom & Sleeve Hem", machine: "FL", smv: 0.80, ops: 2, section: "Finishing" }
+        ]
+      }
+    ];
+
+    let activeStyle = availableStyles[0];
+
+    let hourlyOutputs = [160, 175, 180, 185, 170, 175, 180, 170];
+
+    // Stopwatch State
+    let timerInterval = null;
+    let timerStartTime = 0;
+    let timerElapsedTime = 0;
+    let isTimerRunning = false;
+    let lapTimes = []; // array of seconds
+    let selectedOpForStudy = null;
+
+    // Chart Handle
+    let balancingChartInstance = null;
+
+    // Init App
+    window.onload = function() {
+      renderActiveStyleHeader();
+      renderOperationList();
+      populateTimeStudyDropdown();
+      updateCalculations();
+      initChart();
+      renderHourlyLogUI();
+    };
+
+    // Style Switcher & Modal Handlers
+    function openStyleModal() {
+      renderStylesList();
+      document.getElementById('styleModal').classList.remove('hidden');
+    }
+
+    function closeStyleModal() {
+      document.getElementById('styleModal').classList.add('hidden');
+    }
+
+    function renderStylesList() {
+      const container = document.getElementById('stylesListContainer');
+      container.innerHTML = '';
+
+      availableStyles.forEach((s, idx) => {
+        const isSelected = s.styleCode === activeStyle.styleCode;
+        const card = document.createElement('div');
+        card.className = `p-3 rounded-xl border flex items-center justify-between cursor-pointer transition ${
+          isSelected ? 'bg-emerald-500/10 border-emerald-500/50 text-white' : 'bg-slate-800/80 border-slate-700/60 text-slate-300 hover:border-slate-600'
+        }`;
+        card.onclick = () => selectStyle(idx);
+        card.innerHTML = `
+          <div>
+            <h4 class="text-xs font-bold">${s.name}</h4>
+            <p class="text-[10px] text-slate-400">Code: ${s.styleCode} | ${s.lineNo}</p>
+          </div>
+          ${isSelected ? '<i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>' : ''}
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function selectStyle(index) {
+      activeStyle = availableStyles[index];
+      renderActiveStyleHeader();
+      renderOperationList();
+      populateTimeStudyDropdown();
+      renderHourlyLogUI();
+      if (!document.getElementById('tab-balancing').classList.contains('hidden')) {
+        renderBalancingChart();
+      }
+      closeStyleModal();
+    }
+
+    function createNewStyle() {
+      const name = document.getElementById('newStyleName').value.trim();
+      const code = document.getElementById('newStyleCode').value.trim();
+      const line = document.getElementById('newStyleLine').value.trim();
+
+      if (!name || !code) {
+        return;
+      }
+
+      const newStyleObj = {
+        name: name,
+        styleCode: code,
+        lineNo: line || "Line 01",
+        targetHourly: 180,
+        workingHours: 8,
+        operations: []
+      };
+
+      availableStyles.push(newStyleObj);
+      activeStyle = newStyleObj;
+
+      document.getElementById('newStyleName').value = '';
+      document.getElementById('newStyleCode').value = '';
+      document.getElementById('newStyleLine').value = '';
+
+      renderActiveStyleHeader();
+      renderOperationList();
+      populateTimeStudyDropdown();
+      closeStyleModal();
+    }
+
+    function renderActiveStyleHeader() {
+      document.getElementById('currentStyleBadge').innerText = `${activeStyle.name} | ${activeStyle.lineNo}`;
+      document.getElementById('styleTitleDisplay').innerText = `${activeStyle.name} - Style #${activeStyle.styleCode}`;
+    }
+
+    // Tab Navigation Switcher
+    function switchTab(tabId) {
+      const tabs = ['breakdown', 'timestudy', 'balancing', 'production', 'reports'];
+      tabs.forEach(t => {
+        const section = document.getElementById(`tab-${t}`);
+        const navBtn = document.getElementById(`nav-${t}`);
+        if (t === tabId) {
+          section.classList.remove('hidden');
+          navBtn.className = 'nav-item flex flex-col items-center justify-center w-16 py-1 text-emerald-400 transition';
+        } else {
+          section.classList.add('hidden');
+          navBtn.className = 'nav-item flex flex-col items-center justify-center w-16 py-1 text-slate-500 hover:text-slate-300 transition';
+        }
+      });
+
+      if (tabId === 'balancing') {
+        setTimeout(renderBalancingChart, 100);
+      }
+    }
+
+    // Operations Rendering & Management
+    function renderOperationList() {
+      const list = document.getElementById('operationList');
+      list.innerHTML = '';
+      document.getElementById('opCount').innerText = activeStyle.operations.length;
+
+      activeStyle.operations.forEach((op, index) => {
+        const capacityHr = op.smv > 0 ? Math.round((60 / op.smv) * op.ops) : 0;
+        const card = document.createElement('div');
+        card.className = 'bg-slate-800/80 rounded-xl p-3 border border-slate-700/60 flex items-center justify-between hover:border-slate-600 transition';
+        card.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-7 h-7 rounded-lg bg-slate-900 border border-slate-700/70 flex items-center justify-center text-xs font-bold text-slate-400">
+              ${index + 1}
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-bold text-white">${op.name}</span>
+                <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-slate-700 text-slate-300">${op.machine}</span>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-0.5">Section: ${op.section} | Cap: <strong class="text-emerald-400">${capacityHr} pcs/hr</strong></p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="text-right">
+              <p class="text-xs font-black text-emerald-400 font-mono">${op.smv.toFixed(2)} min</p>
+              <p class="text-[10px] text-amber-400 font-medium">${op.ops} Op${op.ops > 1 ? 's' : ''}</p>
+            </div>
+            <div class="flex gap-1">
+              <button onclick="openEditOperationModal(${op.id})" class="p-1.5 text-slate-400 hover:text-sky-400 transition">
+                <i class="fa-solid fa-pen-to-square text-xs"></i>
+              </button>
+              <button onclick="deleteOperation(${op.id})" class="p-1.5 text-slate-400 hover:text-rose-400 transition">
+                <i class="fa-solid fa-trash text-xs"></i>
+              </button>
+            </div>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+
+      updateCalculations();
+    }
+
+    function updateCalculations() {
+      const totalSMV = activeStyle.operations.reduce((acc, curr) => acc + parseFloat(curr.smv || 0), 0);
+      const totalOps = activeStyle.operations.reduce((acc, curr) => acc + parseFloat(curr.ops || 0), 0);
+
+      document.getElementById('totalSmvDisplay').innerText = totalSMV.toFixed(2);
+      document.getElementById('totalOpsDisplay').innerText = totalOps;
+      document.getElementById('targetHrDisplay').innerText = activeStyle.targetHourly;
+    }
+
+    // Modal Operations
+    function openAddOperationModal() {
+      document.getElementById('opModalTitle').innerText = 'Add New Operation';
+      document.getElementById('opEditId').value = '';
+      document.getElementById('opForm').reset();
+      document.getElementById('opModal').classList.remove('hidden');
+    }
+
+    function openEditOperationModal(id) {
+      const op = activeStyle.operations.find(o => o.id === id);
+      if (!op) return;
+
+      document.getElementById('opModalTitle').innerText = 'Edit Operation';
+      document.getElementById('opEditId').value = op.id;
+      document.getElementById('opNameInput').value = op.name;
+      document.getElementById('opMachineInput').value = op.machine;
+      document.getElementById('opSmvInput').value = op.smv;
+      document.getElementById('opOpsInput').value = op.ops;
+      document.getElementById('opSectionInput').value = op.section;
+
+      document.getElementById('opModal').classList.remove('hidden');
+    }
+
+    function closeOpModal() {
+      document.getElementById('opModal').classList.add('hidden');
+    }
+
+    function handleOpFormSubmit(e) {
+      e.preventDefault();
+      const editId = document.getElementById('opEditId').value;
+      const name = document.getElementById('opNameInput').value;
+      const machine = document.getElementById('opMachineInput').value;
+      const smv = parseFloat(document.getElementById('opSmvInput').value);
+      const ops = parseFloat(document.getElementById('opOpsInput').value);
+      const section = document.getElementById('opSectionInput').value;
+
+      if (editId) {
+        const opIndex = activeStyle.operations.findIndex(o => o.id == editId);
+        if (opIndex !== -1) {
+          activeStyle.operations[opIndex] = { id: parseInt(editId), name, machine, smv, ops, section };
+        }
+      } else {
+        const newId = Date.now();
+        activeStyle.operations.push({ id: newId, name, machine, smv, ops, section });
+      }
+
+      closeOpModal();
+      renderOperationList();
+      populateTimeStudyDropdown();
+    }
+
+    function deleteOperation(id) {
+      activeStyle.operations = activeStyle.operations.filter(o => o.id !== id);
+      renderOperationList();
+      populateTimeStudyDropdown();
+    }
+
+    // STOPWATCH & FLOOR TIME STUDY LOGIC
+    function populateTimeStudyDropdown() {
+      const select = document.getElementById('timeStudyOpSelect');
+      select.innerHTML = '';
+
+      if (activeStyle.operations.length === 0) {
+        select.innerHTML = '<option value="">No operations added</option>';
+        selectedOpForStudy = null;
+        return;
+      }
+
+      activeStyle.operations.forEach(op => {
+        const opt = document.createElement('option');
+        opt.value = op.id;
+        opt.innerText = `${op.name} (${op.machine}) - SMV: ${op.smv}`;
+        select.appendChild(opt);
+      });
+
+      selectedOpForStudy = activeStyle.operations[0];
+    }
+
+    function onTimeStudyOpChange() {
+      const opId = parseInt(document.getElementById('timeStudyOpSelect').value);
+      selectedOpForStudy = activeStyle.operations.find(o => o.id === opId);
+      resetStopwatch();
+    }
+
+    function toggleStopwatch() {
+      if (isTimerRunning) {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        document.getElementById('btnStartStop').innerHTML = '<i class="fa-solid fa-play mr-1"></i> RESUME';
+        document.getElementById('btnStartStop').className = 'flex-1 py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold rounded-xl shadow-lg shadow-emerald-500/20 active:scale-95 transition';
+      } else {
+        timerStartTime = Date.now() - timerElapsedTime;
+        timerInterval = setInterval(updateStopwatchUI, 10);
+        isTimerRunning = true;
+        document.getElementById('btnStartStop').innerHTML = '<i class="fa-solid fa-pause mr-1"></i> PAUSE';
+        document.getElementById('btnStartStop').className = 'flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl shadow-lg shadow-amber-500/20 active:scale-95 transition';
+      }
+    }
+
+    function updateStopwatchUI() {
+      timerElapsedTime = Date.now() - timerStartTime;
+      const totalSecs = timerElapsedTime / 1000;
+      const mins = Math.floor(totalSecs / 60);
+      const secs = Math.floor(totalSecs % 60);
+      const ms = Math.floor((timerElapsedTime % 1000) / 10);
+
+      document.getElementById('stopwatchDisplay').innerText = 
+        `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}.${ms.toString().padStart(2, '0')}`;
+    }
+
+    function resetStopwatch() {
+      clearInterval(timerInterval);
+      isTimerRunning = false;
+      timerElapsedTime = 0;
+      document.getElementById('stopwatchDisplay').innerText = '00:00.00';
+      document.getElementById('btnStartStop').innerHTML = '<i class="fa-solid fa-play mr-1"></i> START';
+      document.getElementById('btnStartStop').className = 'flex-1 py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold rounded-xl shadow-lg shadow-emerald-500/20 active:scale-95 transition';
+    }
+
+    function recordLap() {
+      if (timerElapsedTime === 0) return;
+      const lapSecs = timerElapsedTime / 1000;
+      lapTimes.push(lapSecs);
+
+      resetStopwatch();
+      renderLapsList();
+      calculateTimeStudySMV();
+    }
+
+    function renderLapsList() {
+      const container = document.getElementById('lapsList');
+      container.innerHTML = '';
+      document.getElementById('lapCount').innerText = lapTimes.length;
+
+      if (lapTimes.length === 0) {
+        container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">No cycle times recorded yet. Start timer & tap LAP.</p>';
+        return;
+      }
+
+      lapTimes.forEach((time, index) => {
+        const item = document.createElement('div');
+        item.className = 'flex items-center justify-between p-2 rounded-lg bg-slate-900/60 border border-slate-700/40 text-xs font-mono';
+        item.innerHTML = `
+          <span class="text-slate-400">Cycle #${index + 1}</span>
+          <span class="font-bold text-white">${time.toFixed(2)} sec</span>
+          <span class="text-[10px] text-emerald-400">${(time / 60).toFixed(3)} min</span>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function clearLaps() {
+      lapTimes = [];
+      renderLapsList();
+      calculateTimeStudySMV();
+    }
+
+    function calculateTimeStudySMV() {
+      if (lapTimes.length === 0) {
+        document.getElementById('calculatedResultBadge').innerText = 'Avg: 0.00s';
+        document.getElementById('calculatedSmvDisplay').innerText = '0.00 min';
+        return 0;
+      }
+
+      const avgSecs = lapTimes.reduce((a, b) => a + b, 0) / lapTimes.length;
+      const avgMins = avgSecs / 60;
+      const rating = parseFloat(document.getElementById('ratingInput').value || 100) / 100;
+      const allowance = parseFloat(document.getElementById('allowanceInput').value || 12) / 100;
+
+      const basicTime = avgMins * rating;
+      const sam = basicTime * (1 + allowance);
+
+      document.getElementById('calculatedResultBadge').innerText = `Avg: ${avgSecs.toFixed(2)}s`;
+      document.getElementById('calculatedSmvDisplay').innerText = `${sam.toFixed(3)} min`;
+
+      return sam;
+    }
+
+    function applyCalculatedSmvToOp() {
+      const computedSam = calculateTimeStudySMV();
+      if (computedSam <= 0 || !selectedOpForStudy) return;
+
+      selectedOpForStudy.smv = parseFloat(computedSam.toFixed(2));
+      renderOperationList();
+      populateTimeStudyDropdown();
+    }
+
+    // LINE BALANCING & BOTTLENECK CHART
+    function initChart() {
+      const ctx = document.getElementById('balancingChart').getContext('2d');
+      balancingChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Cycle SMV / Allocated Ops',
+            data: [],
+            backgroundColor: [],
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: {
+              ticks: { color: '#94a3b8', font: { size: 9 } },
+              grid: { display: false }
+            },
+            y: {
+              ticks: { color: '#94a3b8', font: { size: 10 } },
+              grid: { color: '#334155' }
+            }
+          }
+        }
+      });
+    }
+
+    function renderBalancingChart() {
+      if (!balancingChartInstance) return;
+
+      const ops = activeStyle.operations;
+      const labels = ops.map((o, idx) => `Op ${idx + 1}`);
+      const cycleTimes = ops.map(o => o.ops > 0 ? (o.smv / o.ops) : o.smv);
+
+      const totalSMV = ops.reduce((acc, curr) => acc + curr.smv, 0);
+      const totalOps = ops.reduce((acc, curr) => acc + curr.ops, 0);
+      const pitchTime = totalOps > 0 ? totalSMV / totalOps : 0;
+
+      const bgColors = cycleTimes.map(ct => ct > pitchTime ? '#f43f5e' : '#22c55e');
+
+      balancingChartInstance.data.labels = labels;
+      balancingChartInstance.data.datasets[0].data = cycleTimes;
+      balancingChartInstance.data.datasets[0].backgroundColor = bgColors;
+      balancingChartInstance.update();
+
+      const bottlenecks = cycleTimes.filter(ct => ct > pitchTime).length;
+      document.getElementById('bottleneckBadge').innerText = `${bottlenecks} Bottlenecks`;
+      document.getElementById('pitchTimeDisplay').innerText = `${pitchTime.toFixed(2)} min`;
+
+      const targetCapacity = activeStyle.targetHourly;
+      const maxCycleTime = Math.max(...cycleTimes, pitchTime);
+      const actualMaxCapacity = maxCycleTime > 0 ? Math.round(60 / maxCycleTime) : 0;
+      const lineEff = targetCapacity > 0 ? Math.min(Math.round((actualMaxCapacity / targetCapacity) * 100), 100) : 0;
+
+      document.getElementById('lineEffDisplay').innerText = `${lineEff}%`;
+
+      generateBalancingSuggestions(ops, pitchTime);
+    }
+
+    function generateBalancingSuggestions(ops, pitchTime) {
+      const container = document.getElementById('balancingSuggestions');
+      container.innerHTML = '';
+
+      let suggestionsFound = false;
+
+      ops.forEach((op, idx) => {
+        const opCycleTime = op.ops > 0 ? (op.smv / op.ops) : op.smv;
+        if (opCycleTime > pitchTime) {
+          suggestionsFound = true;
+          const recOps = Math.ceil(op.smv / pitchTime);
+          const item = document.createElement('div');
+          item.className = 'bg-rose-500/10 border border-rose-500/30 p-2.5 rounded-xl flex items-start gap-2.5';
+          item.innerHTML = `
+            <i class="fa-solid fa-triangle-exclamation text-rose-400 mt-0.5"></i>
+            <div>
+              <p class="font-bold text-rose-300">Op ${idx + 1}: ${op.name}</p>
+              <p class="text-[11px] text-slate-300 mt-0.5">Cycle time (${opCycleTime.toFixed(2)}m) exceeds Pitch Time (${pitchTime.toFixed(2)}m). Allocate <strong>${recOps} operators</strong> to clear line congestion.</p>
+            </div>
+          `;
+          container.appendChild(item);
+        }
+      });
+
+      if (!suggestionsFound) {
+        container.innerHTML = `
+          <div class="bg-emerald-500/10 border border-emerald-500/30 p-3 rounded-xl flex items-center gap-2">
+            <i class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+            <p class="text-emerald-300 font-medium">Line is perfectly balanced! All cycle times are below Pitch Time.</p>
+          </div>
+        `;
+      }
+    }
+
+    // PRODUCTION STUDY TRACKER
+    function renderHourlyLogUI() {
+      const container = document.getElementById('hourlyLogsContainer');
+      container.innerHTML = '';
+
+      for (let h = 1; h <= activeStyle.workingHours; h++) {
+        const val = hourlyOutputs[h - 1] || 0;
+        const row = document.createElement('div');
+        row.className = 'flex items-center justify-between bg-slate-900/60 border border-slate-700/50 p-2 rounded-xl text-xs';
+        row.innerHTML = `
+          <span class="text-slate-400 font-medium">Hour ${h} Output</span>
+          <div class="flex items-center gap-2">
+            <input type="number" value="${val}" onchange="updateHourlyOutput(${h - 1}, this.value)" class="w-20 bg-slate-800 border border-slate-700 text-center text-white font-bold py-1 rounded-lg focus:outline-none focus:border-emerald-500">
+            <span class="text-slate-500 text-[10px]">pcs</span>
+          </div>
+        `;
+        container.appendChild(row);
+      }
+
+      updateProductionStudy();
+    }
+
+    function updateHourlyOutput(index, val) {
+      hourlyOutputs[index] = parseInt(val) || 0;
+      updateProductionStudy();
+    }
+
+    function updateProductionStudy() {
+      const targetPerHr = parseInt(document.getElementById('prodTargetInput').value) || activeStyle.targetHourly;
+      activeStyle.targetHourly = targetPerHr;
+      
+      const totalActual = hourlyOutputs.reduce((a, b) => a + b, 0);
+      const totalTarget = targetPerHr * activeStyle.workingHours;
+      const variance = totalActual - totalTarget;
+
+      const overallEff = totalTarget > 0 ? Math.round((totalActual / totalTarget) * 100) : 0;
+
+      document.getElementById('totalActualOutputDisplay').innerText = `Total: ${totalActual} pcs`;
+      document.getElementById('prodOverallEff').innerText = `${overallEff}%`;
+
+      const varElem = document.getElementById('prodVarianceDisplay');
+      if (variance >= 0) {
+        varElem.innerText = `+${variance} pcs`;
+        varElem.className = 'text-sm font-bold text-emerald-400 mt-0.5';
+      } else {
+        varElem.innerText = `${variance} pcs`;
+        varElem.className = 'text-sm font-bold text-rose-400 mt-0.5';
+      }
+    }
+
+    // EXPORT PDF & EXCEL REPORTS
+    function exportToPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFontSize(16);
+      doc.text(`GARMENTS OPERATION BULLETIN`, 14, 15);
+      doc.setFontSize(10);
+      doc.text(`Style: ${activeStyle.name} | Code: ${activeStyle.styleCode} | Line: ${activeStyle.lineNo}`, 14, 22);
+
+      const tableData = activeStyle.operations.map((op, idx) => [
+        idx + 1,
+        op.name,
+        op.machine,
+        op.section,
+        op.smv.toFixed(2),
+        op.ops,
+        op.smv > 0 ? Math.round((60 / op.smv) * op.ops) : 0
+      ]);
+
+      doc.autoTable({
+        startY: 28,
+        head: [['#', 'Operation Name', 'Machine', 'Section', 'SMV', 'Ops', 'Cap/Hr']],
+        body: tableData,
+        theme: 'grid',
+        headStyles: { fillColor: [22, 163, 74] }
+      });
+
+      doc.save(`Operation_Bulletin_${activeStyle.styleCode}.pdf`);
+    }
+
+    function exportToExcel() {
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += "Seq,Operation Name,Machine,Section,SMV,Operators,Capacity Per Hour\n";
+
+      activeStyle.operations.forEach((op, idx) => {
+        const cap = op.smv > 0 ? Math.round((60 / op.smv) * op.ops) : 0;
+        csvContent += `${idx + 1},"${op.name}",${op.machine},${op.section},${op.smv},${op.ops},${cap}\n`;
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `Bulletin_${activeStyle.styleCode}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function exportTimeStudyCSV() {
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += "Cycle Number,Observed Time (Seconds),Observed Time (Minutes)\n";
+
+      lapTimes.forEach((time, idx) => {
+        csvContent += `${idx + 1},${time.toFixed(2)},${(time / 60).toFixed(3)}\n`;
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `TimeStudy_Laps.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>

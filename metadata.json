@@ -1,0 +1,6 @@
+{
+  "name": "GarmentFlow IE - Garments Operation Bulletin & Time Study",
+  "description": "Industrial Engineering suite for apparel manufacturing: Operation Breakdown bulletins, shop-floor stopwatch time study, line balancing & bottleneck analysis, hourly production tracker, and PDF/CSV export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
